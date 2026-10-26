@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Itests -Isrc -Iinclude
+CXXFLAGS := -std=c++17 -Wall -g -Itests -Isrc -Iinclude
 
 SRC_DIR := src
 TEST_DIR := tests
@@ -36,13 +36,16 @@ $(MAIN_OBJ): $(SRC_DIR)/main.cpp | $(BUILD_DIR)
 $(BUILD_DIR)/%.o: $(TEST_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Link test executable
+$(TEST_EXECUTABLE): $(OBJ) $(TEST_OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) $(TEST_OBJ) -o $@
+
 # Link main program
 $(EXECUTABLE): $(MAIN_OBJ) $(OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 # Build and run tests — IMPORTANT: DO NOT LINK main.o
-test: $(OBJ) $(TEST_OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) $(TEST_OBJ) -o $(TEST_EXECUTABLE)
+test: $(TEST_EXECUTABLE)
 	./$(TEST_EXECUTABLE)
 
 run: $(EXECUTABLE)
@@ -50,4 +53,3 @@ run: $(EXECUTABLE)
 
 clean:
 	rm -rf $(BUILD_DIR)
-
